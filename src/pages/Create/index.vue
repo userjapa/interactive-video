@@ -1,33 +1,12 @@
 <template>
 <div class="container wrap align-items-start full-width">
 
-  <div class="item">
-    <div>
-      {{ message }}
-    </div>
-    <div>
-      <video ref="video" class="screen" :src="video.src" @playing="isPlaying = true" @pause="isPlaying = false" @loadeddata="loadedData($event.target)" @timeupdate="showInterruptions($event.target)" />
-    </div>
-
-    <div class="player container align-center">
-      <div class="btns">
-        <button class="btn" @click="play()" v-if="!isPlaying" :disabled="!loaded">Play</button>
-        <button class="btn" @click="pause()" v-if="isPlaying" :disabled="!loaded">Pause</button>
-      </div>
-      <div class="current-time flex-grow-1">
-        <input class="full" type="range" v-model="time.current" :max="duration" @change="changeTime(time.current)" @input="changeTime(time.current)">
-      </div>
-      <div class="volume">
-        <input type="range" v-model="volume" step="0.001" @change="changeVolume(volume)" @input="changeVolume(volume)" max="1">
-      </div>
-    </div>
-
-  </div>
-
+  <VideoPlayer :video="video" ref="video-player"/>
+  <Answers :answers="answers"/>
   <div class="item">
     <div class="option container column text-align-left">
       <label for="video_src">Video Source</label>
-      <input class="input" id="video_src" type="text" v-model="video.src">
+      <input class="input" id="video_src" type="text" v-model="video.src" @click="video.src = 'https://www.blogger.com/video-play.mp4?contentId=dabefc8f50ad941'">
     </div>
     <form v-on:submit.prevent="addInterruption(interruption)">
       <div class="container column text-align-left option">
@@ -41,8 +20,21 @@
       <div class="container column text-align-left option">
         <label for="video_interruption_time">Interruption Time</label>
         <div class="container">
-          <input class="input margin-right-10" type="number" v-model="interruption.time" step="0.000001">
+          <input class="input margin-right-10" if="video_interruption_time" type="number" v-model="interruption.time" step="0.000001">
           <button class="btn" type="button" @click="getCurrentTime()">Get Current Time</button>
+        </div>
+      </div>
+      <div class="container column text-align-left option">
+        <label for="video_interruption_answer_text">Interruption Answers</label>
+        <div class="container">
+          <input class="input margin-right-10" id="video_interruption_answer_text" type="text" v-model="answer.text">
+          <button @click.prevent="addAnswer(answer)">Add Answer</button>
+        </div>
+        <div class="container" v-for="(aswr, index) in interruption.answers">
+          <input class="input margin-right-10" type="text" v-model="aswr.text">
+          <input type="radio" name="correct" @change="correctChange(aswr)">
+          <label :for="`video_interruption_answer_correct_${index}`">Correct</label>
+          <button @click.prevent="removeAnswer(index)">Remove</button>
         </div>
       </div>
       <div>
@@ -83,6 +75,11 @@
 </div>
 </template>
 <script>
+import VideoPlayer from '../../components/VideoPlayer'
+import Answers from '../../components/Answers'
+
+import answerBus from '../../components/Answers/bus'
+
 export default {
   name: "Create",
   data() {
@@ -90,58 +87,28 @@ export default {
       interruption: {
         message: '',
         pause: false,
-        time: 0
+        time: 0,
+        answers: []
       },
-      isPlaying: false,
-      loaded: false,
-      time: {
-        old: 0,
-        current: 0
+      answer: {
+        text: '',
+        correct: false
       },
-      duration: 0,
-      volume: 1,
-      message: ''
+      answers: []
     }
   },
   methods: {
-    play() {
-      this.$refs['video'].play()
-    },
-    pause() {
-      this.$refs['video'].pause()
-    },
     addInterruption (interruption) {
       this.$store.commit('addInterruption', interruption)
       this.interruption = {
         message: '',
         pause: false,
-        time: 0
+        time: 0,
+        answers: []
       }
     },
     getCurrentTime () {
-      const { currentTime } = this.$refs['video']
-      this.interruption.time = currentTime
-    },
-    loadedData(video) {
-      this.duration = video.duration
-      this.loaded = true
-      video.play()
-    },
-    showInterruptions(video) {
-      this.time.old = this.time.current
-      this.time.current = video.currentTime
-      const index = this.video.interruptions.findIndex(x => (x.time >= this.time.old && x.time <= this.time.current))
-      if (index >= 0) {
-        this.message = this.video.interruptions[index].message
-        if (this.video.interruptions[index].pause) video.pause()
-      }
-    },
-    changeTime(time) {
-      this.message = ''
-      this.$refs['video'].currentTime = time
-    },
-    changeVolume(volume) {
-      this.$refs['video'].volume = volume
+      this.interruption.time = this.$refs['video-player'].getCurrentTime()
     },
     editInterruption (index) {
       this.$store.commit('setToUpdate', index)
@@ -156,11 +123,31 @@ export default {
       this.interruption = {
         message: '',
         pause: false,
-        time: 0
+        time: 0,
+        answers: []
       }
     },
     removeInterruption (index) {
       this.$store.commit('remove', index)
+    },
+    addAnswer (answer) {
+      this.interruption.answers.push(answer)
+      this.answer = {
+        text: '',
+        correct: false
+      }
+    },
+    removeAnswer (index) {
+      this.interruption.answers.splice(index, 1)
+    },
+    correctChange (answer) {
+      this.interruption.answers.map(x => {
+        if (x.text === answer.text) x.correct = true
+        else x.correct = false
+      })
+    },
+    setAnswers (answers) {
+      this.answers = answers
     }
   },
   computed: {
@@ -168,12 +155,15 @@ export default {
       return this.$store.getters['getVideo']
     }
   },
-  watch: {
-    'video.src': function() {
-      this.loaded = false
-      this.duration = 0
-      this.$refs['video'].load()
-    }
+  components: {
+    VideoPlayer,
+    Answers
+  },
+  mounted () {
+    answerBus.$on('setAnswers', this.setAnswers)
+  },
+  beforeDestroy() {
+    answerBus.$off('setAnswers', this.setAnswers)
   }
 }
 </script>
