@@ -6,6 +6,8 @@ import router from './router'
 import store from './store'
 Vue.config.productionTip = false
 
+require('the-grid-flexbox/css/the-grid.min.css')
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
