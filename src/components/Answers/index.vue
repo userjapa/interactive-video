@@ -15,14 +15,14 @@ export default {
   },
   methods: {
     select (answer, target) {
-      if (!this.answers.selected) {
+      if (!this.answersCopy.selected) {
         if (answer.correct) target.style['background-color'] = 'green'
         else {
-          const correctIndex = this.answers.findIndex(x => x.correct)
+          const correctIndex = this.answersCopy.findIndex(x => x.correct)
           target.style['background-color'] = 'red'
           this.$refs[`answer${correctIndex}`][0].style['background-color'] = 'green'
         }
-        this.answers.selected = true
+        this.answersCopy.selected = true
       }
     },
     resetBackground () {

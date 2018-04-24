@@ -32,7 +32,7 @@
         </div>
         <div class="container" v-for="(aswr, index) in interruption.answers">
           <input class="input margin-right-10" type="text" v-model="aswr.text">
-          <input type="radio" name="correct" @change="correctChange(aswr)">
+          <input type="radio" name="correct" @change="correctChange(aswr)" :checked="aswr.correct">
           <label :for="`video_interruption_answer_correct_${index}`">Correct</label>
           <button @click.prevent="removeAnswer(index)">Remove</button>
         </div>
@@ -99,12 +99,18 @@ export default {
   },
   methods: {
     addInterruption (interruption) {
-      this.$store.commit('addInterruption', interruption)
-      this.interruption = {
-        message: '',
-        pause: false,
-        time: 0,
-        answers: []
+      let hasCorrectAnswer = false
+      for (const answr of interruption.answers) if (answr.correct) hasCorrectAnswer = true
+      if (hasCorrectAnswer) {
+        this.$store.commit('addInterruption', interruption)
+        this.interruption = {
+          message: '',
+          pause: false,
+          time: 0,
+          answers: []
+        }
+      } else {
+        alert('Must set the correct answer!')
       }
     },
     getCurrentTime () {
