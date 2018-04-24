@@ -56,6 +56,30 @@
           <button type="button" name="button" @click="save(video)">Save Configurations</button>
         </div>
       </div>
+      <div class="b">
+        <div>
+          <h3>Video</h3>
+        </div>
+        <div>
+          Source: {{ video.src }}
+        </div>
+        <div>
+          <div>
+            Interruptions:
+          </div>
+          <div v-for="inpt in video.interruptions">
+            <div>
+              Time: {{ inpt.time }}
+            </div>
+            <div>
+              Stop: {{ inpt.pause?'Yes':'No' }}
+            </div>
+            <div>
+              Message: {{ inpt.message }}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
