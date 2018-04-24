@@ -1,5 +1,6 @@
 @import 'base/buttons';
 @import 'base/forms';
+@import 'base/modal';
 
 html {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -28,4 +29,8 @@ html {
 
 .full-width {
   width: 100%;
+}
+
+.relative {
+  position: relative;
 }

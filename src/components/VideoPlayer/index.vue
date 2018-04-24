@@ -1,10 +1,10 @@
 <template>
-  <div class="item">
+  <div class="item flex-basis-300 flex-grow-1">
     <div>
-      {{ message }}
+      <!-- {{ message }} -->
     </div>
     <div>
-      <video ref="video" class="screen" :src="video.src" @playing="isPlaying = true" @pause="isPlaying = false" @loadeddata="loadedData($event.target)" @timeupdate="showInterruptions($event.target)" />
+      <video ref="video" class="screen full-width" :src="video.src" @playing="isPlaying = true" @pause="isPlaying = false" @loadeddata="loadedData($event.target)" @timeupdate="showInterruptions($event.target)" />
     </div>
 
     <div class="player container align-center">
@@ -58,6 +58,7 @@ export default {
       const index = this.video.interruptions.findIndex(x => (x.time >= this.time.old && x.time <= this.time.current))
       if (index >= 0) {
         answerBus.$emit('setAnswers', this.video.interruptions[index].answers)
+        answerBus.$emit('setMessage', this.video.interruptions[index].message)
         this.message = this.video.interruptions[index].message
         if (this.video.interruptions[index].pause) video.pause()
       }
