@@ -48,12 +48,11 @@
               <button type="button" @click="getCurrentTime()">Get Current Time</button>
             </div>
             <div>
-              <button type="submit" name="button">Add Interruption</button>
+              <button type="submit" name="submit" v-if="!$store.getters['isToUpdate']">Add Interruption</button>
+              <button type="button" name="edit" v-if="$store.getters['isToUpdate']" @click="updateInterruption(interruption)">Edit Interruption</button>
+              <button type="button" name="cancel" v-if="$store.getters['isToUpdate']" @click="cancelUpdate()">Cancel Edit</button>
             </div>
           </form>
-        </div>
-        <div>
-          <button type="button" name="button" @click="save(video)">Save Configurations</button>
         </div>
       </div>
       <div class="b">
@@ -67,7 +66,7 @@
           <div>
             Interruptions:
           </div>
-          <div v-for="inpt in video.interruptions">
+          <div class="b" v-for="(inpt, index) in video.interruptions">
             <div>
               Time: {{ inpt.time }}
             </div>
@@ -76,6 +75,10 @@
             </div>
             <div>
               Message: {{ inpt.message }}
+            </div>
+            <div>
+              <button @click="editInterruption(index)">Edit</button>
+              <button @click="removeInterruption(index)">Remove</button>
             </div>
           </div>
         </div>
@@ -88,10 +91,6 @@ export default {
   name: "Create",
   data () {
     return {
-      video: {
-        src: null,
-        interruptions: []
-      },
       interruption: {
         message: '',
         pause: false,
@@ -116,16 +115,12 @@ export default {
       this.$refs['video'].pause()
     },
     addInterruption (interruption) {
-      this.video.interruptions.push(interruption)
+      this.$store.commit('addInterruption', interruption)
       this.interruption = {
         message: '',
         pause: false,
         time: 0
       }
-    },
-    save (video) {
-      console.log(video)
-      this.$store.commit('setVideo', video)
     },
     getCurrentTime () {
       const { currentTime } = this.$refs['video']
@@ -134,6 +129,7 @@ export default {
     loadedData (video) {
       this.duration = video.duration
       this.loaded = true
+      video.play()
     },
     showInterruptions (video) {
       this.time.old = this.time.current
@@ -150,6 +146,30 @@ export default {
     },
     changeVolume (volume) {
       this.$refs['video'].volume = volume
+    },
+    editInterruption (index) {
+      this.$store.commit('setToUpdate', index)
+      this.interruption = Object.assign({}, this.video.interruptions[index])
+    },
+    updateInterruption (interruption) {
+      this.$store.commit('edit', interruption)
+      this.cancelUpdate()
+    },
+    cancelUpdate () {
+      this.$store.commit('setToUpdate', null)
+      this.interruption = {
+        message: '',
+        pause: false,
+        time: 0
+      }
+    },
+    removeInterruption (index) {
+      this.$store.commit('remove', index)
+    }
+  },
+  computed: {
+    video () {
+      return this.$store.getters['getVideo']
     }
   },
   watch: {
