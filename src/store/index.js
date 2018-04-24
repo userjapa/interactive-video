@@ -7,8 +7,7 @@ export default new VueX.Store({
   state: {
     video: {
       src: null,
-      interruptions: [],
-      messages: []
+      interruptions: []
     }
   },
   mutations: {
