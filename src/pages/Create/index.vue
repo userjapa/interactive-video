@@ -16,7 +16,10 @@
         />
       </div>
       <div>
-        <input type="range" v-model="time.current" :max="duration" @change="changeTime(time.current)">
+        <input class="full" type="range" v-model="time.current" :max="duration" @change="changeTime(time.current)" @input="changeTime(time.current)">
+      </div>
+      <div>
+        <input type="range" v-model="volume" step="0.001" @change="changeVolume(volume)" @input="changeVolume(volume)" max="1">
       </div>
       <div>
         <button @click="play()" v-if="!isPlaying" :disabled="!loaded">Play</button>
@@ -77,6 +80,7 @@ export default {
         current: 0
       },
       duration: 0,
+      volume: 1,
       message: ''
     }
   },
@@ -89,6 +93,11 @@ export default {
     },
     addInterruption (interruption) {
       this.video.interruptions.push(interruption)
+      this.interruption = {
+        message: '',
+        pause: false,
+        time: 0
+      }
     },
     save (video) {
       console.log(video)
@@ -114,6 +123,9 @@ export default {
     changeTime (time) {
       this.message = ''
       this.$refs['video'].currentTime = time
+    },
+    changeVolume (volume) {
+      this.$refs['video'].volume = volume
     }
   },
   watch: {
@@ -129,5 +141,9 @@ export default {
 .screen {
   width: 75%;
   height: auto;
+}
+
+input[type=range].full {
+  width: 75%;
 }
 </style>
