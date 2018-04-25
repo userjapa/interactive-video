@@ -1,5 +1,5 @@
 <template>
-<div class="container wrap align-items-start full-width relative">
+<div class="container wrap align-items-start full-width relative margin-bottom-20">
   <VideoPlayer :video="video" />
 </div>
 </template>
