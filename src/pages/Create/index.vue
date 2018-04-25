@@ -15,7 +15,7 @@
         <div class="text-align-left">
           <strong>Interruptions:</strong>
         </div>
-        <div v-for="(inpt, index) in video.interruptions" class="text-align-left item-border margin-top-10">
+        <div v-for="(inpt, index) in interruptions" class="text-align-left item-border margin-top-10">
           <div>
             <strong>Time</strong>: {{ inpt.time }}
           </div>
@@ -38,7 +38,7 @@
     <div class="">
       <div class="option container column text-align-left">
         <label for="video_src">Video Source</label>
-        <input class="input" id="video_src" type="text" v-model="video.src" @click="video.src = 'https://www.blogger.com/video-play.mp4?contentId=dabefc8f50ad941'">
+        <input class="input" id="video_src" type="text" v-model="video.src">
       </div>
       <form v-on:submit.prevent="addInterruption(interruption)">
         <div class="container column text-align-left option">
@@ -98,10 +98,25 @@ export default {
     return {
       showResult: false,
       interruption: {
-        message: '',
+        message: 'Which animals appears in the video?',
         pause: true,
-        time: 0,
-        answers: []
+        time: 54,
+        answers: [{
+            text: 'Horse and Monkey',
+            correct: false
+          },
+          {
+            text: 'Bird and Bunny',
+            correct: true
+          },
+          {
+            text: 'Snake and Bunny',
+            correct: false
+          },
+          {
+            text: 'Bird and Horse',
+            correct: false
+          }]
       },
       answer: {
         text: '',
@@ -172,8 +187,13 @@ export default {
     }
   },
   computed: {
-    video() {
+    video () {
       return this.$store.getters['getVideo']
+    },
+    interruptions () {
+      const interruptions = this.$store.getters['getVideoInterruptions']
+      if (interruptions.length >= 0) this.showResult = true
+      return interruptions
     }
   },
   components: {

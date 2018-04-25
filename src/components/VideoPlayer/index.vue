@@ -19,9 +19,9 @@
         <input type="range" v-model="volume" step="0.001" @change="changeVolume(volume)" @input="changeVolume(volume)" max="1">
       </div>
     </div>
-    <div class="">
+    <!-- <div class="">
       {{time.current}}
-    </div>
+    </div> -->
   </div>
 
 </div>

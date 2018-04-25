@@ -6,7 +6,7 @@ Vue.use(VueX)
 export default new VueX.Store({
   state: {
     video: {
-      src: null,
+      src: 'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
       interruptions: []
     },
     toUpdate: null
@@ -15,8 +15,8 @@ export default new VueX.Store({
     setVideo (state, video) {
       state.video = video
     },
-    addInterruption ({ video }, interruption) {
-      video.interruptions.push(interruption)
+    addInterruption (state, interruption) {
+      state.video.interruptions.push(interruption)
     },
     setToUpdate (state, id) {
       state.toUpdate = id
@@ -30,8 +30,11 @@ export default new VueX.Store({
     }
   },
   getters: {
-    getVideo ({ video }) {
-      return video
+    getVideo (state) {
+      return state.video
+    },
+    getVideoInterruptions (state) {
+      return state.video.interruptions
     },
     isToUpdate ({ toUpdate }) {
       if (toUpdate !== null) return true
