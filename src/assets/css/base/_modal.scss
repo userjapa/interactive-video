@@ -4,5 +4,75 @@
   width: 90%;
   max-width: 500px;
   padding: 20px;
-  box-shadow: 0 0 20px 5px rgba(0,0,0,.5)
+  box-shadow: 0 0 20px 5px rgba(0,0,0,.5);
+  height: calc(100% - 40px);
+
+  h1 {
+    line-height: 1.1;
+    font-size: 1.8rem;
+  }
+}
+
+.modal-title {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-btn {
+  min-height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {}
+
+.modal-questions {
+  text-align: left;
+  max-width: 90%;
+  margin: 0 auto;
+
+  li {
+    margin-top: 10px;
+  }
+
+  label {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}
+
+.correct {
+  color: green;
+  font-weight: bold;
+}
+
+.wrong {
+  color: red;
+  font-weight: bold;
+}
+
+.ball {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  margin-right: 10px;
+  box-shadow: 0 0 0 2px #ddd;
+
+  &.active {
+    background: #ddd;
+
+    &.correct {
+      background: green;
+      box-shadow: 0 0 0 2px green;
+    }
+
+    &.wrong {
+      background: red;
+      box-shadow: 0 0 0 2px red;
+    }
+  }
 }

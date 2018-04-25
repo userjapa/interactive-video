@@ -2,14 +2,25 @@
 <div class="fixed container align-center" v-if="showModal">
 
   <div class="modal">
-    <h1>{{message}}</h1>
-
-    <div v-for="(answr, index) in answersCopy" @click="select(answr, $event.target)" :ref="`answer${index}`">
-      {{ answr.text }}
+    <div class="modal-title">
+      <h1>{{message}}</h1>
     </div>
 
-    <div class="margin-top-20">
-      <button type="button" name="button" class="btn btn-primary" @click="showModal = false" v-if="selected">Continuar</button>
+    <div class="modal-content">
+      <ul class="list-style-none modal-questions">
+        <li v-for="(answr, index) in answersCopy" @click="select(answr, $event.target)" :ref="`answer${index}`">
+
+          <div class="container align-items-center">
+            <div class="ball" :class="{active : answr.selected}"></div>
+            {{ answr.text }}
+          </div>
+
+        </li>
+      </ul>
+    </div>
+
+    <div class="modal-btn margin-top-20">
+      <button type="button" name="button" class="btn btn-primary" @click="nextQuestion()" :disabled="!selected" :class="{disabled : !selected}">Continuar</button>
     </div>
   </div>
 
@@ -30,10 +41,11 @@ export default {
   methods: {
     select(answer, target) {
       if (!this.selected) {
-        if (answer.correct) target.style['background-color'] = 'green'
+        answer.selected = true
+        if (answer.correct) target.classList.add("correct")
         else {
           const correctIndex = this.answersCopy.findIndex(x => x.correct)
-          target.style['background-color'] = 'red'
+          target.classList.add("wrong")
           this.$refs[`answer${correctIndex}`][0].classList.add("correct")
         }
         this.selected = true
@@ -51,6 +63,10 @@ export default {
       this.message = message
       this.showModal = true
       this.selected = false
+    },
+    nextQuestion() {
+      this.showModal = false
+      answerBus.$emit('play')
     }
   },
   props: [
@@ -78,11 +94,5 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-}
-.correct {
-  background: green;
-}
-.wrong {
-  background: red;
 }
 </style>

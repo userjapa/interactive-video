@@ -1,13 +1,41 @@
 <template>
-<div class="container wrap full-width">
+<div class="container wrap align-items-start justify-content-center">
 
-  <div class="relative item flex-basis-300 flex-grow-1 container">
+  <div class="relative item margin-10 item-border flex-basis-300 flex-grow-1 container align-items-start column">
     <VideoPlayer :video="video" ref="video-player" />
-    <Answers :answers="answers" />
+
+    <div class="item-border result margin-top-20" v-show="showResult">
+      <div class="text-align-left">
+        <h3>Video</h3>
+      </div>
+      <div class="text-align-left">
+        <strong>Source:</strong> {{ video.src }}
+      </div>
+      <div>
+        <div class="text-align-left">
+          <strong>Interruptions:</strong>
+        </div>
+        <div v-for="(inpt, index) in video.interruptions" class="text-align-left item-border margin-top-10">
+          <div>
+            <strong>Time</strong>: {{ inpt.time }}
+          </div>
+          <div>
+            <strong>Stop:</strong> {{ inpt.pause?'Yes':'No' }}
+          </div>
+          <div>
+            <strong>Message:</strong> {{ inpt.message }}
+          </div>
+          <div class="margin-top-10">
+            <button @click="editInterruption(index)" class="btn">Edit</button>
+            <button @click="removeInterruption(index)" class="btn btn-danger">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="flex-basis-300 flex-grow-1">
-    <div class="item">
+  <div class="item margin-10 item-border flex-basis-300 flex-grow-1">
+    <div class="">
       <div class="option container column text-align-left">
         <label for="video_src">Video Source</label>
         <input class="input" id="video_src" type="text" v-model="video.src" @click="video.src = 'https://www.blogger.com/video-play.mp4?contentId=dabefc8f50ad941'">
@@ -15,7 +43,7 @@
       <form v-on:submit.prevent="addInterruption(interruption)">
         <div class="container column text-align-left option">
           <label for="video_interruption_message">Interruption Message</label>
-          <input class="input" id="video_interruption_message" type="text" v-model="interruption.message">
+          <input class="input" id="video_interruption_message" type="text" v-model="interruption.message" @click="interruption.message = 'Qual a cor do cavalo branco de napoleao?'">
         </div>
 
         <div class="container column text-align-left option">
@@ -36,14 +64,13 @@
             <label for="video_interruption_answer_text">Interruption Answers</label>
             <div class="container">
               <input class="input margin-right-10" id="video_interruption_answer_text" type="text" v-model="answer.text">
-              <button @click.prevent="addAnswer(answer)" class="btn btn-primary">Add Answer</button>
+              <button @click.prevent="addAnswer(answer)" class="btn btn-primary">+</button>
             </div>
           </div>
 
           <div class="container column text-align-left">
             <div class="container align-center margin-top-10" v-for="(aswr, index) in interruption.answers">
               <input type="radio" class="margin-right-10" name="correct" @change="correctChange(aswr)" :checked="aswr.correct">
-              <!-- <label :for="`video_interruption_answer_correct_${index}`">Correct</label> -->
               <input class="input margin-right-10" type="text" v-model="aswr.text">
               <button @click.prevent="removeAnswer(index)" class="btn btn-danger">Remove</button>
             </div>
@@ -58,41 +85,10 @@
       </form>
     </div>
   </div>
-
-  <div class="item flex-basis-1200">
-    <div class="text-align-left">
-      <h3>Video</h3>
-    </div>
-    <div class="text-align-left">
-      <strong>Source:</strong> {{ video.src }}
-    </div>
-    <div>
-      <div class="text-align-left">
-        <strong>Interruptions:</strong>
-      </div>
-      <div v-for="(inpt, index) in video.interruptions" class="text-align-left">
-        <div>
-          <strong>Time</strong>: {{ inpt.time }}
-        </div>
-        <div>
-          <strong>Stop:</strong> {{ inpt.pause?'Yes':'No' }}
-        </div>
-        <div>
-          <strong>Message:</strong> {{ inpt.message }}
-        </div>
-        <div>
-          <button @click="editInterruption(index)">Edit</button>
-          <button @click="removeInterruption(index)">Remove</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 </template>
 <script>
 import VideoPlayer from '../../components/VideoPlayer'
-import Answers from '../../components/Answers'
 
 import answerBus from '../../components/Answers/bus'
 
@@ -100,9 +96,10 @@ export default {
   name: "Create",
   data() {
     return {
+      showResult: false,
       interruption: {
         message: '',
-        pause: false,
+        pause: true,
         time: 0,
         answers: []
       },
@@ -115,6 +112,7 @@ export default {
   },
   methods: {
     addInterruption(interruption) {
+      this.showResult = true
       let hasCorrectAnswer = false
       for (const answr of interruption.answers)
         if (answr.correct) hasCorrectAnswer = true
@@ -179,8 +177,7 @@ export default {
     }
   },
   components: {
-    VideoPlayer,
-    Answers
+    VideoPlayer
   },
   mounted() {
     answerBus.$on('setAnswers', this.setAnswers)
@@ -221,11 +218,11 @@ export default {
 }
 
 .questions {
-  border: 1px solid #ddd;
-  padding: 20px;
-  box-sizing: border-box;
-  margin-bottom: 20px;
-  border-radius: 4px;
+    border: 1px solid #ddd;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    border-radius: 4px;
 }
 
 input[type=range].full {

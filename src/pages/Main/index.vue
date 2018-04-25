@@ -14,7 +14,7 @@
     </div>
   </div>
 
-  <div class="size margin">
+  <div class="size margin content">
     <router-view/>
   </div>
 
