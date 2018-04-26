@@ -5,7 +5,6 @@
 </template>
 <script>
 import VideoPlayer from '../../components/VideoPlayer'
-import answerBus from '../../components/Answers/bus'
 
 export default {
   name: "Preview",
@@ -20,18 +19,12 @@ export default {
     }
   },
   computed: {
-    video() {
+    video () {
       return this.$store.getters['getVideo']
     }
   },
   components: {
-    VideoPlayer,
-  },
-  mounted() {
-    answerBus.$on('setAnswers', this.setAnswers)
-  },
-  beforeDestroy() {
-    answerBus.$off('setAnswers', this.setAnswers)
+    VideoPlayer
   }
 }
 </script>
