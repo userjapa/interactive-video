@@ -1,6 +1,6 @@
 <template>
 <div class="container wrap align-items-start full-width relative margin-bottom-20">
-  <VideoPlayer :video="video" />
+  <VideoPlayer :exercise="exercise" />
 </div>
 </template>
 <script>
@@ -20,8 +20,8 @@ export default {
     }
   },
   computed: {
-    video() {
-      return this.$store.getters['getVideo']
+    exercise () {
+      return this.$store.getters['getExercise']
     }
   },
   components: {

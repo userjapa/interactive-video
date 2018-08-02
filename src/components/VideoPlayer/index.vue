@@ -2,8 +2,8 @@
 <div class="full-width">
 
   <div class="relative video-relative">
-    <video ref="video" class="screen full-width" :src="video.src" @playing="isPlaying = true" @pause="isPlaying = false" @loadeddata="loadedData($event.target)" @timeupdate="showInterruptions($event.target)" />
-    <Answers :answers="answers" />
+    <video ref="video" class="screen full-width" :src="exercise.src" @playing="isPlaying = true" @pause="isPlaying = false" @loadeddata="loadedData($event.target)" @timeupdate="showInterruptions($event.target)" />
+    <Answers :question="question" />
   </div>
 
   <div class="player container column align-center">
@@ -34,26 +34,35 @@ export default {
   },
   data() {
     return {
-      answers: [],
+      question: {},
       duration: 0,
       volume: 1,
       isPlaying: false,
       loaded: false,
-      message: '',
+      interruption: null,
       time: {
         old: 0,
         current: 0
-      }
+      },
+      index: 0,
+      ended: false
     }
   },
-  mounted() {
-    answerBus.$on('play', this.play)
-  },
-  beforeDestroy() {
-    answerBus.$off('play', this.play)
-  },
   methods: {
+    setCurrent (questions) {
+      let qst = {}
+      for (const index in questions) {
+        this.index = index
+        if (!questions[index].answered) qst = questions[index]
+        else if (index == (questions.length - 1)) {
+          qst = questions[index]
+          this.ended = true
+        }
+      }
+      this.$set(this, 'question', qst)
+    },
     play() {
+      this.setCurrent(this.exercise.questions)
       this.$refs['video'].play()
     },
     pause() {
@@ -62,22 +71,21 @@ export default {
     loadedData(video) {
       this.duration = video.duration
       this.loaded = true
-      video.play()
+      this.first = true
+      // video.play()
     },
     showInterruptions(video) {
       this.time.old = this.time.current
       this.time.current = video.currentTime
-      const index = this.video.interruptions.findIndex(x => (x.time >= this.time.old && x.time <= this.time.current))
+      const index = this.exercise.questions.findIndex(x => (x.time >= this.time.old && x.time <= this.time.current))
       if (index >= 0) {
         // answerBus.$emit('setAnswers', this.video.interruptions[index].answers)
-        this.answers = this.video.interruptions[index].answers
-        answerBus.$emit('setMessage', this.video.interruptions[index].message)
-        this.message = this.video.interruptions[index].message
-        if (this.video.interruptions[index].pause) video.pause()
+        this.answers = this.exercise.questions[index].answers
+        answerBus.$emit('setMessage')
+        video.pause()
       }
     },
     changeTime(time) {
-      this.message = ''
       this.$refs['video'].currentTime = time
     },
     changeVolume(volume) {
@@ -89,14 +97,21 @@ export default {
     }
   },
   props: [
-    'video'
+    'exercise'
   ],
   watch: {
-    'video.src': function() {
+    'exercise.src': function() {
       this.loaded = false
       this.duration = 0
       this.$refs['video'].load()
     }
+  },
+  mounted() {
+    answerBus.$on('play', this.play)
+    this.setCurrent(this.exercise.questions)
+  },
+  beforeDestroy() {
+    answerBus.$off('play', this.play)
   }
 }
 </script>

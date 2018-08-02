@@ -5,36 +5,36 @@ Vue.use(VueX)
 
 export default new VueX.Store({
   state: {
-    video: {
+    exercise: {
       src: 'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
-      interruptions: []
+      questions: []
     },
     toUpdate: null
   },
   mutations: {
-    setVideo (state, video) {
-      state.video = video
+    setExercise (state, exercise) {
+      state.exercise = exercise
     },
-    addInterruption (state, interruption) {
-      state.video.interruptions.push(interruption)
+    addQuestion (state, question) {
+      state.exercise.questions.push(question)
     },
     setToUpdate (state, id) {
       state.toUpdate = id
     },
-    edit (state, interruption) {
+    edit (state, question) {
       const id = state.toUpdate
-      state.video.interruptions[id] = interruption
+      state.exercise.questions[id] = question
     },
     remove (state, id) {
-      state.video.interruptions.splice(id, 1)
+      state.exercise.questions.splice(id, 1)
     }
   },
   getters: {
-    getVideo (state) {
-      return state.video
+    getExercise (state) {
+      return state.exercise
     },
-    getVideoInterruptions (state) {
-      return state.video.interruptions
+    getQuestions (state) {
+      return state.exercise.questions
     },
     isToUpdate ({ toUpdate }) {
       if (toUpdate !== null) return true

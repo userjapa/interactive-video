@@ -3,12 +3,17 @@
 
   <div class="modal">
     <div class="modal-title">
-      <h1>{{message}}</h1>
+      <h1>{{question.question}}</h1>
     </div>
 
     <div class="modal-content">
       <ul class="list-style-none modal-questions">
-        <li v-for="(answr, index) in answersCopy" @click="select(answr, $event.target)" :ref="`answer${index}`">
+        <li v-for="(answr, index) in question.answers"
+            @click="select(answr, $event.target)"
+            :class="{
+              correct: answr.correct && question.answered,
+              wrong: !answr.correct && question.answered && answr.selected
+            }">
 
           <div class="container align-items-center">
             <div class="ball" :class="{active : answr.selected}"></div>
@@ -20,7 +25,7 @@
     </div>
 
     <div class="modal-btn margin-top-20">
-      <button type="button" name="button" class="btn btn-primary" @click="nextQuestion()" :disabled="!selected" :class="{disabled : !selected}">Continuar</button>
+      <button type="button" name="button" class="btn btn-primary" @click="nextQuestion()" :disabled="!question.answered" :class="{disabled : !question.answered}">Continuar</button>
     </div>
   </div>
 
@@ -32,35 +37,19 @@ export default {
   name: "Answers",
   data() {
     return {
-      answersCopy: [],
-      message: '',
+      index: 0,
       showModal: false,
-      selected: false
+      ended: false
     }
   },
   methods: {
     select(answer, target) {
-      if (!this.selected) {
+      if (!this.question.answered) {
         answer.selected = true
-        if (answer.correct) target.classList.add("correct")
-        else {
-          const correctIndex = this.answersCopy.findIndex(x => x.correct)
-          target.classList.add("wrong")
-          this.$refs[`answer${correctIndex}`][0].classList.add("correct")
-        }
-        this.selected = true
+        this.question.answered = true
       }
     },
-    resetBackground() {
-      for (let index in this.answers) {
-        if (this.$refs[`answer${index}`]) {
-          if (this.$refs[`answer${index}`][0])
-            this.$refs[`answer${index}`][0].classList.add("wrong")
-        }
-      }
-    },
-    setMessage(message) {
-      this.message = message
+    setMessage() {
       this.showModal = true
       this.selected = false
     },
@@ -70,14 +59,8 @@ export default {
     }
   },
   props: [
-    'answers'
+    'question'
   ],
-  watch: {
-    answers: function() {
-      this.answersCopy = this.answers.slice()
-      this.resetBackground()
-    }
-  },
   mounted() {
     answerBus.$on('setMessage', this.setMessage)
   },
