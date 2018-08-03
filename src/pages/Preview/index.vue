@@ -4,6 +4,7 @@
 </div>
 </template>
 <script>
+import _ from 'lodash'
 import VideoPlayer from '../../components/VideoPlayer'
 
 export default {
@@ -15,7 +16,15 @@ export default {
   },
   computed: {
     exercise () {
-      return this.$store.getters['getExercise']
+      const exercise = _.cloneDeep(this.$store.getters['getExercise'])
+      for (let qst of exercise.questions) {
+        for (let aswr of qst.answers) {
+          this.$set(aswr, 'selected', false)
+        }
+        this.$set(qst, 'answered', false)
+        this.$set(qst, 'hit', false)
+      }
+      return exercise
     }
   },
   components: {
