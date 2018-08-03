@@ -9,11 +9,6 @@ import VideoPlayer from '../../components/VideoPlayer'
 
 export default {
   name: "Preview",
-  data() {
-    return {
-      answers: []
-    }
-  },
   computed: {
     exercise () {
       const exercise = _.cloneDeep(this.$store.getters['getExercise'])

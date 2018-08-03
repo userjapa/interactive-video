@@ -9,13 +9,13 @@
         <h3>Video</h3>
       </div>
       <div class="text-align-left">
-        <strong>Source:</strong> {{ exercise.src }}
+        <strong>Source:</strong> {{ exercise.video }}
       </div>
       <div>
         <div class="text-align-left">
           <strong>Questions:</strong>
         </div>
-        <div v-for="(qst, index) in questions" class="text-align-left item-border margin-top-10">
+        <div v-for="(qst, index) in exercise.questions" class="text-align-left item-border margin-top-10">
           <div>
             <strong>Time</strong>: {{ qst.time }}
           </div>
@@ -123,7 +123,6 @@ export default {
       if (hasCorrectAnswer) {
         this.$store.commit('addQuestion', question)
         this.question = {
-          message: '',
           time: 0,
           answers: []
         }
