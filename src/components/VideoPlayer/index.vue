@@ -77,12 +77,11 @@ export default {
     showInterruptions(video) {
       this.time.old = this.time.current
       this.time.current = video.currentTime
-      const index = this.exercise.questions.findIndex(x => (x.time >= this.time.old && x.time <= this.time.current))
-      if (index >= 0) {
-        // answerBus.$emit('setAnswers', this.video.interruptions[index].answers)
-        this.answers = this.exercise.questions[index].answers
-        answerBus.$emit('setMessage')
-        video.pause()
+      if (this.question.time) {
+        if (this.question.time >= this.time.old && this.question.time <= this.time.current) {
+          answerBus.$emit('setMessage')
+          video.pause()
+        }
       }
     },
     changeTime(time) {

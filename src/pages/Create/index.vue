@@ -82,7 +82,6 @@
 <script>
 import _ from 'lodash'
 import VideoPlayer from '../../components/VideoPlayer'
-import answerBus from '../../components/Answers/bus'
 
 export default {
   name: "Create",
@@ -112,8 +111,7 @@ export default {
       answer: {
         text: '',
         correct: false
-      },
-      answers: []
+      }
     }
   },
   methods: {
@@ -170,9 +168,6 @@ export default {
         if (x.text === answer.text) x.correct = true
         else x.correct = false
       })
-    },
-    setAnswers(answers) {
-      this.answers = answers
     }
   },
   computed: {
@@ -198,12 +193,6 @@ export default {
   },
   components: {
     VideoPlayer
-  },
-  mounted() {
-    answerBus.$on('setAnswers', this.setAnswers)
-  },
-  beforeDestroy() {
-    answerBus.$off('setAnswers', this.setAnswers)
   }
 }
 </script>
